@@ -59,11 +59,16 @@ export class Vector2D {
   perpendicular(): Vector2D {
     return new Vector2D(-1 * this.y, this.x);
   }
- 
+
   static fromAngle(angle: number, length = 1): Vector2D {
     return new Vector2D(Math.cos(angle) * length, length * Math.sin(angle))
   }
-  
+
+
+  static zero(): Vector2D {
+    return new Vector2D(0,0);
+  }
+
 
   toString() {
       const rx = Number(this.x.toFixed(1));

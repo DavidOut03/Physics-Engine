@@ -11,6 +11,7 @@ import { BallSimulation } from "./simulations/part3";
 import { getBody } from "./utils/html";
 import { capFirst } from "./utils/string";
 import { PartZero } from "./simulations/part0";
+import { Part4Simulation } from "./simulations/part4";
 
 function createSimulationElement(name: string): HTMLDivElement {
   const template = document.querySelector("template#simulation-template") as HTMLTemplateElement;
@@ -97,5 +98,6 @@ function createSimulation(name: string, simulation: Simulation): SimulationView 
   return view;
 }
 
+createSimulation("part 4", new Part4Simulation())
 createSimulation("part 3", new BallSimulation())
 createSimulation("part 1", new PartZero())

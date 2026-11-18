@@ -151,7 +151,7 @@ export abstract class Simulation {
 
 export class SimulationView {
   private startedLoop: boolean = false;
-  private showDebug: boolean = true;
+  private showDebug: boolean = false;
 
   private averageFps: number = 0;
   private lastFpsUpdateMs: number = 0;
@@ -163,7 +163,10 @@ export class SimulationView {
   private offsetY: number = 0;
 
 
-  constructor(private readonly canvas: Canvas, private readonly simulation: Simulation) {}
+  constructor(private readonly canvas: Canvas, private readonly simulation: Simulation) {
+    this.start();
+    this.simulation.togglePause()
+  }
 
   /**
    * Starts the rendering loop. Does nothing if it is already running.

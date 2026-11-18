@@ -5,7 +5,7 @@ import {Body} from '../body';
 
 export class BallSimulation extends Simulation {
 
-  showVectors: boolean = true;
+  showVectors: boolean = false;
   bodies: Ball[] = [];
 
   gravity: number = 9.81
