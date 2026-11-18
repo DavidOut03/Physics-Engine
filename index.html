@@ -4,13 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Physics engine</title>
-    <style>
-      html, body { margin: 0; height: 100%; overflow: hidden; background: #111; }
-      canvas { display: block; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
   </head>
   <body>
-    <canvas id="canvas"></canvas>
+
+      <template id="simulation-template">
+          <div class="simulation-container">
+              <h1>TITLE</h1>
+
+              <div class="simulation-wrapper">
+                  <div class="simulation-controlls">
+                      <button class="start" data-icon="▶" title="Start">Start</button>
+                      <button class="pause" data-icon="⏸" title="Pause (p)">Pause</button>
+                      <button class="speed" data-icon="⏩" title="Playback speed (s)">1x</button>
+                      <button class="next-frame" data-icon="⏭" title="Next step (n)">Step</button>
+
+                      <button class="fullscreen" data-icon="⛶" title="Fullscreen" aria-label="Fullscreen"></button>
+                  </div>
+
+                  <div class="canvas-box">
+                       <canvas class="simulation"> </canvas>
+                  </div>
+              </div>
+          </div>
+      </template>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

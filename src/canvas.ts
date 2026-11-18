@@ -4,13 +4,13 @@
 
 import type { Vector2D } from "./vector";
 
-
-
 export class Canvas {
 
   constructor(public element: HTMLCanvasElement) {
-    this.updateCanvasSize()
-    window.onresize = () => this.updateCanvasSize()
+      new ResizeObserver((entries) => {
+        const { width, height } = entries[0].contentRect;
+        this.updateCanvasSize(width, height);
+      }).observe(element);
   }
 
   getHeight(): number {
@@ -33,20 +33,15 @@ export class Canvas {
     return this.element.getContext("2d")!;
   }
 
-  updateCanvasSize() {
+  updateCanvasSize(width: number, height: number) {
     const context = this.getContext();
     if(context == null)
       return;
 
     const devicePixelRatio  = window.devicePixelRatio || 1;
-    const cssWidth = window.innerWidth;
-    const cssHeight = window.innerHeight;
 
-    this.element.style.width = cssWidth + "px";
-    this.element.style.height = cssHeight + "px";
-
-    this.element.width = Math.round(cssWidth * devicePixelRatio);
-    this.element.height = Math.round(cssHeight * devicePixelRatio);
+    this.element.width = Math.round(width * devicePixelRatio);
+    this.element.height = Math.round(height * devicePixelRatio);
 
     context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   }
@@ -73,14 +68,6 @@ export class Canvas {
     context.fillText(text, x, y);
   }
 
-  // drawDot(deg: number): void {
-  //   const radian = toRadian(deg)
-  //   const x = getCenterX() + (circleRadius + 0 /* gap */) * Math.cos(radian);
-  //   const y = getCenterY() + (circleRadius + 0 /* gap */) * Math.sin(radian)
-
-  //   drawCircle(5, x, y, "green")
-  // }
-
 
 drawCircle(size: number, x: number, y: number, color: string): void {
   let context = this.getContext();
@@ -94,7 +81,7 @@ drawCircle(size: number, x: number, y: number, color: string): void {
   context.fill()
 }
 
-drawVector(xStart: number, yStart: number, vector: Vector2D, offset: number = 0, scale: number = 1): void {
+drawVector(xStart: number, yStart: number, vector: Vector2D, offset: number = 0, scale: number = .08): void {
   let context = this.getContext();
 
   if (!context || (vector.x === 0 && vector.y === 0))
@@ -117,12 +104,12 @@ drawVector(xStart: number, yStart: number, vector: Vector2D, offset: number = 0,
   context.beginPath();
   context.moveTo(xStart, yStart);
   context.lineTo(x2, y2);
-  context.lineWidth = 2; // Set lineWidth here too so the blue shaft matches the green tip
+  context.lineWidth = .02; // Set lineWidth here too so the blue shaft matches the green tip
   context.strokeStyle = "blue";
   context.stroke();
 
   // Pijlpunt lijnen
-  const headLength = 10;
+  const headLength = .25;
   context.beginPath();
   context.moveTo(x2, y2);
   context.lineTo(
@@ -155,24 +142,8 @@ interface TextOptions {
 //   resetCanvasSize();
 
 
-//   context.beginPath();
-//   context.moveTo(0, 0);
-//   context.lineTo(getWidth(), getHeight())
-//   context.strokeStyle = "red";
-//   context.stroke()
-
-//   context.beginPath()
-//   context.font = "50px serif";
-//   context.fillStyle = "blue"
-//   context.fillText("Hello world", 50, 90);
-
-
-//   const circleRadius = 50;
-//   drawCircle(circleRadius, getCenterX(), getCenterY(), "orange")
-
-
-
-
-//   for (let i = 0; i < 12; i++) {
-//     drawDot(-90 + i * 30)
-//   }
+  // context.beginPath();
+  // context.moveTo(0, 0);
+  // context.lineTo(getWidth(), getHeight())
+  // context.strokeStyle = "red";
+  // context.stroke()

@@ -1,15 +1,21 @@
 import { Canvas} from "./canvas";
+import { clamp } from "./utils/math";
 
 interface SimulationSettings {
   fixedTimeStep: number;
   maxStepsPerFrame: number;
   playBackSpeed: number;
+  height: number,
+  width: number;
+  units: Units;
 }
 
 interface SimulationState {
  timeBank: number;
  paused: boolean;
 }
+
+export type Units = "meters" | "pixels";
 
 export abstract class Simulation {
 
@@ -19,13 +25,16 @@ export abstract class Simulation {
   constructor() {
 
     this.settings = {
-      fixedTimeStep: 1/20,
+      fixedTimeStep: 1/120,
       maxStepsPerFrame: 5,
       playBackSpeed: 1,
+      height: 9,
+      width: 16,
+      units: "pixels"
     } as SimulationSettings;
     this.state = {
       timeBank: 0,
-      paused: true
+      paused: false,
     } as SimulationState;
   }
 
@@ -40,7 +49,7 @@ export abstract class Simulation {
    * Stops the rendering loop of the simulation after the last frame.
    */
   public stop() {
-    this.state.paused = false;
+    this.state.paused = true;
   }
 
   public togglePause() {
@@ -62,17 +71,19 @@ export abstract class Simulation {
 
   /**
    * Advances the simulation by the real time that has passed since the last frame
-   *
-   * @param ctx The canvas context where the simulation should be rendered.
-   * @param deltaTimeMs The time passed since the previous frame.
+   * @param deltaTime The time passed since the previous frame.
    */
   public nextFrame(deltaTime: number) {
+      deltaTime = clamp(deltaTime, 0, .1);
+
     if (!this.isPaused()) {
       this.addPhysicsTime(deltaTime);
     }
 
+
+
     let updates = 0;
-    while(this.state.timeBank > this.settings.fixedTimeStep && this.settings.maxStepsPerFrame >= updates) {
+    while(this.state.timeBank >= this.settings.fixedTimeStep && this.settings.maxStepsPerFrame > updates) {
       this.state.timeBank -= this.settings.fixedTimeStep
 
       this.update(this.settings.fixedTimeStep)
@@ -81,11 +92,33 @@ export abstract class Simulation {
   }
 
   public setPlaybackSpeed(speed: number): void {
-    this.settings.playBackSpeed = Math.min(1, Math.max(0.1, speed))
+    this.settings.playBackSpeed = Math.min(2, Math.max(0.1, speed))
   }
 
   public getPlaybackSpeed(): number {
     return this.settings.playBackSpeed;
+  }
+
+
+  public getWorldSize(): { height: number, width: number } {
+    return {
+      height: this.settings.height,
+      width: this.settings.width
+    }
+  }
+
+
+  public setWorldSize(width: number, height: number) : void {
+    this.settings.width = width;
+    this.settings.height = height;
+  }
+
+  public setUnits(unit: Units): void {
+    this.settings.units = unit;
+  }
+
+  public getUnits(): Units {
+    return this.settings.units;
   }
 
   /**
@@ -100,6 +133,20 @@ export abstract class Simulation {
    */
   public abstract draw(canvas: Canvas): void;
 
+  /**
+   * Initialise the canvas or the scene
+   * @param canvas
+   */
+  public init(canvas: Canvas): void {}
+
+  /**
+   * Returns all keyboard shortcuts implemented for this simulation.
+   * @returns A record of all implemented keyboard shortcuts.
+   */
+  public getKeyboardShortCuts(): Record<string, () => void> {
+    return {}
+  }
+
 }
 
 export class SimulationView {
@@ -110,25 +157,19 @@ export class SimulationView {
   private lastFpsUpdateMs: number = 0;
   private frameCount: number = 0;
   private lastFrameTimeMs: number = 0;
-  private canvasController: CanvasController;
 
-  constructor(private readonly canvas: Canvas, private readonly simulation: Simulation) {
-    this.canvasController = new CanvasController({
-      "p": () => this.simulation.togglePause(),
-      "d": () => this.toggleDebugView(),
-      "n": () => {
-        this.simulation.nextStep()
+  private pixelsPerMeter: number = 0;
+  private offsetX: number = 0;
+  private offsetY: number = 0;
 
-      }
-    })
-  }
+
+  constructor(private readonly canvas: Canvas, private readonly simulation: Simulation) {}
 
   /**
    * Starts the rendering loop. Does nothing if it is already running.
    */
   public start(): void {
       if (this.startedLoop) return;
-
       this.startedLoop = true;
 
       const now = performance.now();
@@ -136,7 +177,8 @@ export class SimulationView {
       this.lastFpsUpdateMs = now;
       this.frameCount = 0;
 
-      this.canvasController.attach(this.canvas);
+      this.canvas.clear();
+      this.simulation.init(this.canvas);
       requestAnimationFrame((timeMs: number) => this.renderFrame(timeMs));
     }
 
@@ -144,8 +186,11 @@ export class SimulationView {
    * Stops the rendering loop  after the last frame.
    */
   public stop() {
-    this.canvasController.detach(this.canvas);
+    if (!this.startedLoop) {
+      return;
+    }
     this.startedLoop = false;
+    this.canvas.clear()
   }
 
   /**
@@ -154,12 +199,34 @@ export class SimulationView {
    * @param timeMs Timestamp from requestAnimationFrame, in ms since page load.
    */
   private renderFrame(timeMs: number): void {
-    if(!this.startedLoop)
+    if (!this.hasStarted()) {
       return;
+    }
+
+
+
 
     this.canvas.clear();
+    this.updateWorldSize();
+
+    const context = this.canvas.getContext()!;
+    const world = this.simulation.getWorldSize();
+    context.fillStyle = "#21222C";
+    context.fillRect(0, 0, world.width, world.height);
+
     this.simulation.nextFrame((timeMs - this.lastFrameTimeMs) / 1000);
+
+
+
+
+       context.save();
+
+      context.translate(this.offsetX, this.offsetY);
+      context.scale(this.pixelsPerMeter, this.pixelsPerMeter)
+
     this.simulation.draw(this.canvas);
+    context.restore()
+
 
     if(this.showDebug)
       this.drawDebugView();
@@ -168,7 +235,8 @@ export class SimulationView {
     this.lastFrameTimeMs = timeMs;
     this.updateFps(timeMs);
 
-    requestAnimationFrame((timeMs: number) => this.renderFrame(timeMs));
+     if (this.hasStarted())
+       requestAnimationFrame((timeMs: number) => this.renderFrame(timeMs));
   };
 
   private drawDebugView() {
@@ -177,6 +245,16 @@ export class SimulationView {
 
   public toggleDebugView() {
     this.showDebug = !this.showDebug;
+  }
+
+  private updateWorldSize() {
+    const sBounds = this.simulation.getWorldSize();
+    const cWidth = this.canvas.getWidth();
+    const cHeight = this.canvas.getHeight();
+
+    this.pixelsPerMeter = Math.min(cWidth / sBounds.width, cHeight / sBounds.height);
+    this.offsetX = (cWidth - sBounds.width * this.pixelsPerMeter) / 2;
+    this.offsetY = (cHeight - sBounds.height * this.pixelsPerMeter) / 2
   }
 
   /**
@@ -194,6 +272,11 @@ export class SimulationView {
   public getFps(): number {
     return this.averageFps;
   }
+
+  public hasStarted(): boolean {
+    return this.startedLoop;
+  }
+
 
 }
 

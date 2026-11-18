@@ -1,0 +1,125 @@
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+
+html {
+	font-size: var(--root-font-size, 16px);
+}
+
+html,
+body {
+    display: flex;
+    flex-direction: column;
+
+	scroll-behavior: smooth;
+	background-color: #edf5f3;
+	padding: 10px clamp(10px, 3vw, 120px);
+}
+
+.simulation-container .simulation-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 10px;
+
+    resize: both;
+    min-width: 300px;
+    min-height: 200px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.simulation-container .simulation-controlls {
+    background-color: #353742;
+    width: 100%;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    button:last-child {
+        margin-left: auto;
+    }
+
+
+    button {
+       	display: inline-flex;
+    	align-items: center;
+    	justify-content: center;
+    	white-space: nowrap;
+
+        padding: .25rem .5rem;
+
+        border-radius: 4px;
+        border: none;
+
+        gap: .4em;
+        line-height: 1;
+
+        cursor: pointer;
+        user-select: none;
+
+        background-color: #44475A;
+        color: #F8F8F2;
+
+        &:hover {
+            background-color: #6272A4;
+        }
+
+        /* Icon from data-icon, same size and width on every button */
+        &::before {
+            content: attr(data-icon) "\FE0E";
+            display: inline-flex;
+            width: 1em;
+            font-family: "Apple Symbols", "Segoe UI Symbol", sans-serif;
+            font-size: 1em;
+            line-height: .5;
+            text-align: center;
+
+            align-items: center;
+            justify-content: center;
+            justify-self: center;
+            align-self: center;
+
+        }
+
+        &.start {
+            background-color: #50FA7B;
+            color: #282A36;
+
+            &.running {
+                background-color: #FF5555;
+            }
+
+            &:hover {
+                filter: brightness(1.1);
+            }
+        }
+    }
+}
+
+.simulation-container .canvas-box {
+    position: relative;
+    aspect-ratio: 16/9;
+    flex: 1 1 auto;
+    background-color: #282A36;
+}
+
+.simulation-container canvas.simulation {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    &:focus {
+        border: none;
+        outline: none;
+    }
+}
