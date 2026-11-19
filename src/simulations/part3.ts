@@ -3,7 +3,7 @@ import { Simulation } from "../simulation";
 import { Vector2D } from "../vector";
 import {Body} from '../body';
 
-export class BallSimulation extends Simulation {
+export class Part3 extends Simulation {
 
   showVectors: boolean = false;
   bodies: Ball[] = [];
@@ -17,16 +17,12 @@ export class BallSimulation extends Simulation {
     if(this.bodies.length > 0)
       return;
 
-    const totalBalls = 30;
-    for(var i = 0; i < totalBalls; i++) {
-      var x = Math.random() * this.getWorldSize().width;
-      var y = Math.random() * this.getWorldSize().height;
-      var velocity = new Vector2D(0, this.gravity);
-      var size = Math.random() * .5;
-      var color = "white";
-
-      this.bodies.push(new Ball(new Vector2D(x, y), velocity, new Vector2D(0, this.gravity), size, color));
-    }
+    this.bodies = [
+      new Ball(new Vector2D(5, 4.5), Vector2D.zero(), new Vector2D(0, this.gravity), .25, "red"),
+      new Ball(new Vector2D(8, 4.5), Vector2D.zero(), new Vector2D(0, this.gravity), .75, "red"),
+      new Ball(new Vector2D(11, 4.5), Vector2D.zero(), new Vector2D(0, this.gravity), 1, "red")
+    ];
+  
   }
 
     public update(deltaTime: number): void {

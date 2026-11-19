@@ -54,6 +54,19 @@ export class Canvas {
      context.clearRect(0, 0, this.getWidth(), this.getHeight());
   }
 
+  drawLine(x1: number, y1: number, x2: number, y2: number, width: number, color: string): void {
+    const context = this.getContext();
+    if(context == null)
+      return;
+
+    context.beginPath();
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.lineWidth = width;
+    context.strokeStyle = color;
+    context.stroke();
+  }
+
   /**
    * Possible things to draw
    */

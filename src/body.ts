@@ -42,7 +42,7 @@ export abstract class DynamicBody extends Body {
     this.wind = 0;
     this.gravity = 9.81;
 
-    this.linearDrag =  5;
+    this.linearDrag =  0;
     this.quadraticDrag = 0;
   }
 

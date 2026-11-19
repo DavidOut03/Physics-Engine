@@ -7,11 +7,15 @@ import "./vector.unit.test";
 
 import { CanvasController, Simulation, SimulationView }from "./simulation";
 import { Canvas } from "./canvas";
-import { BallSimulation } from "./simulations/part3";
+
 import { getBody } from "./utils/html";
 import { capFirst } from "./utils/string";
-import { PartZero } from "./simulations/part0";
-import { Part4Simulation } from "./simulations/part4";
+
+import { Part0 } from "./simulations/part0";
+import { Part3 } from "./simulations/part3";
+import { Part4 } from "./simulations/part4";
+import { Part5 } from "./simulations/part5";
+
 
 function createSimulationElement(name: string): HTMLDivElement {
   const template = document.querySelector("template#simulation-template") as HTMLTemplateElement;
@@ -98,6 +102,8 @@ function createSimulation(name: string, simulation: Simulation): SimulationView 
   return view;
 }
 
-createSimulation("part 4", new Part4Simulation())
-createSimulation("part 3", new BallSimulation())
-createSimulation("part 1", new PartZero())
+
+createSimulation("part 5", new Part5())
+createSimulation("part 4", new Part4())
+createSimulation("part 3", new Part3())
+createSimulation("part 1", new Part0())

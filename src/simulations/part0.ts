@@ -2,7 +2,7 @@ import type { Canvas } from "../canvas";
 import { Simulation } from "../simulation";
 import { toRadian } from "../utils/math";
 
-export class PartZero extends Simulation {
+export class Part0 extends Simulation {
 
   public init(canvas: Canvas): void {
       this.setWorldSize(canvas.getWidth(), canvas.getHeight());

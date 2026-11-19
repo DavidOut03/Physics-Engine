@@ -3,7 +3,7 @@ import type { Canvas } from "../canvas";
 import { Simulation } from "../simulation";
 import { Vector2D } from "../vector";
 
-export class Part4Simulation extends Simulation {
+export class Part4 extends Simulation {
 
     balls: Ball[] = [];
 
