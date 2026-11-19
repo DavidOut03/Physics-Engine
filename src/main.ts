@@ -15,7 +15,7 @@ import { Part0 } from "./simulations/part0";
 import { Part3 } from "./simulations/part3";
 import { Part4 } from "./simulations/part4";
 import { Part5 } from "./simulations/part5";
-
+import { Part6 } from "./simulations/part6";
 
 function createSimulationElement(name: string): HTMLDivElement {
   const template = document.querySelector("template#simulation-template") as HTMLTemplateElement;
@@ -102,7 +102,7 @@ function createSimulation(name: string, simulation: Simulation): SimulationView 
   return view;
 }
 
-
+createSimulation("part 6", new Part6())
 createSimulation("part 5", new Part5())
 createSimulation("part 4", new Part4())
 createSimulation("part 3", new Part3())
